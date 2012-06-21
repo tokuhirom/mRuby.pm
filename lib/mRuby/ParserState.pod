@@ -1,0 +1,14 @@
+=head1 NAME
+
+mRuby::ParserState - parser state object
+
+=head1 METHODS
+
+=over 4
+
+=item $parser_state->pool_close()
+
+Call a  mrb_pool_close() in C level.
+
+=back
+

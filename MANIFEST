@@ -3,6 +3,8 @@ Build.PL
 Changes
 lib/mRuby.pm
 lib/mRuby.xs
+lib/mRuby/ParserState.pod
+lib/mRuby/State.pod
 lib/typemap
 LICENSE
 MANIFEST			This list of files

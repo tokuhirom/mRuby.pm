@@ -93,7 +93,7 @@ proc_new(mrb_state *mrb, int n)
         XSRETURN(1);
 
 void
-run(mrb_state *mrb, struct RProc* proc, SV *val)
+run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
     PPCODE:
         mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
         mXPUSHs(mrb_value2sv(ret));

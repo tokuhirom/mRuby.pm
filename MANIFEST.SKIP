@@ -92,3 +92,13 @@ perltidy.ERR$
 \.bak$
 ^lib/mRuby.o$
 ^lib/mRuby.c$
+^vendor/mruby/.*\.o$
+^+vendor/mruby/bin/[^.].*$
+^+vendor/mruby/lib/.*\.a$
+^vendor/mruby/mrblib/mrblib.c$
+^vendor/mruby/mrblib/mrblib.ctmp$
+^vendor/mruby/mrblib/mrblib.d$
+^vendor/mruby/mrblib/mrblib.rbtmp$
+^vendor/mruby/src/.*\.d$
+^vendor/mruby/src/y.tab.c$
+^+vendor/mruby/.*\.d$
