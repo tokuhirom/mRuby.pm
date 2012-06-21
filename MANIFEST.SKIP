@@ -90,3 +90,5 @@ perltidy.ERR$
 ^MANIFEST\.SKIP
 \b\.gitignore
 \.bak$
+^lib/mRuby.o$
+^lib/mRuby.c$

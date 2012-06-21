@@ -1,8 +1,6 @@
 .gitmodules
 Build.PL
 Changes
-lib/mRuby.c
-lib/mRuby.o
 lib/mRuby.pm
 lib/mRuby.xs
 lib/typemap
