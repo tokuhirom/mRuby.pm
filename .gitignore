@@ -17,3 +17,5 @@ META.json
 META.yml
 README
 lib/mRuby.c
+mRuby-*/
+lib/mRuby.o
