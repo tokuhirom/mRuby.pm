@@ -15,21 +15,29 @@ __END__
 
 =head1 NAME
 
-mRuby - A module for you
+mRuby - mruby binding for perl5.
 
 =head1 SYNOPSIS
 
-  use mRuby;
+    use mRuby;
+
+    my $mrb = mRuby::State->new();
+    my $st = $mrb->parse_string('9');
+    my $n = $mrb->generate_code($st);
+    $st->pool_close();
+    my $ret = $mrb->run($mrb->proc_new($n), undef);
 
 =head1 DESCRIPTION
 
-mRuby is
+mRuby is mruby binding for perl5.
 
 =head1 AUTHOR
 
 Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>
 
 =head1 SEE ALSO
+
+L<mRuby>
 
 =head1 LICENSE
 
