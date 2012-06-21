@@ -5,9 +5,61 @@
 #include "../ppport.h"
 
 #include "mruby.h"
-#include "mruby/proc.h"
+#include "mruby/array.h"
+#include "mruby/class.h"
 #include "mruby/compile.h"
+#include "mruby/hash.h"
+#include "mruby/khash.h"
+#include "mruby/proc.h"
 #include "mruby/string.h"
+#include "mruby/variable.h"
+
+KHASH_DECLARE(ht, mrb_value, mrb_value, 1);
+/* KHASH_DEFINE (ht, mrb_value, mrb_value, 1, mrb_hash_ht_hash_func, mrb_hash_ht_hash_equal); */
+
+static
+SV * mrb_value2sv(mrb_value v) {
+    switch (mrb_type(v)) {
+    case MRB_TT_FALSE:
+        return &PL_sv_undef;
+    case MRB_TT_FIXNUM:
+        return newSViv(mrb_fixnum(v));
+    case MRB_TT_STRING:
+        return newSVpv((char*)RSTRING_PTR(v), (STRLEN)RSTRING_LEN(v));
+    case MRB_TT_HASH: {
+        HV * ret = newHV();
+        khash_t(ht) * h = RHASH_TBL(v);
+        khiter_t k;
+
+        if (!h) { abort(); }
+        for (k = kh_begin(h); k != kh_end(h); k++) {
+            if (kh_exist(h, k)) {
+                mrb_value kk = kh_key(h,k);
+                mrb_value vv = kh_value(h,k);
+
+                STRLEN key_len;
+                char *key = SvPV(mrb_value2sv(kk), key_len);
+                hv_store(ret, key, key_len, mrb_value2sv(vv), 0);
+            }
+        }
+
+        return newRV_noinc((SV*)ret);
+    }
+    case MRB_TT_ARRAY: {
+        int len = RARRAY_LEN(v);
+        AV * ret = newAV();
+        int i;
+        mrb_value *ptr = RARRAY_PTR(v);
+        for (i=0; i<len; i++) {
+            av_push(ret, mrb_value2sv(ptr[i]));
+        }
+        return newRV_noinc((SV*)ret);
+    }
+    default:
+        croak("This type of ruby value is not supported yet: %d", mrb_type(v));
+    }
+    abort();
+}
 
 MODULE = mRuby      PACKAGE = mRuby
 
@@ -44,21 +96,8 @@ void
 run(mrb_state *mrb, struct RProc* proc, SV *val)
     PPCODE:
         mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
-        switch (ret.tt) {
-            case MRB_TT_FALSE:
-                XSRETURN_UNDEF;
-                break;
-            case MRB_TT_FIXNUM:
-                mXPUSHi(mrb_fixnum(ret));
-                XSRETURN(1);
-            case MRB_TT_STRING:
-                mXPUSHp((char*)RSTRING_PTR(ret), (STRLEN)RSTRING_LEN(ret));
-                XSRETURN(1);
-            default:
-                /* to do more... */
-                abort();
-        }
-        abort();
+        mXPUSHs(mrb_value2sv(ret));
+        XSRETURN(1);
 
 MODULE = mRuby      PACKAGE = mRuby::ParserState
 
