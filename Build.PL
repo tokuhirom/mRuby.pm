@@ -24,6 +24,48 @@ my $class = Module::Build->subclass(
             }
             $self->SUPER::ACTION_code(@_);
         }
+
+    sub c99_available {
+        my($self) = @_;
+
+        return 0 if not $self->have_c_compiler();
+    
+        require File::Temp;
+        require File::Basename;
+        require Config;
+    
+        my $tmpfile = File::Temp->new(SUFFIX => '.c');
+    
+        $tmpfile->print(<<'C99');
+// include a C99 header
+#include <stdbool.h>
+inline // a C99 keyword with C99 style comments
+int test_c99() {
+    int i = 0;
+    i++;
+    int j = i - 1; // another C99 feature: declaration after statement
+    return j;
+}
+C99
+    
+        $tmpfile->close();
+    
+        system("$Config::Config{cc} -c " . $tmpfile->filename);
+    
+        (my $objname = File::Basename::basename($tmpfile->filename)) =~ s/\Q.c\E$/$Config::Config{_o}/;
+        unlink $objname or warn "Cannot unlink $objname (ignored): $!";
+    
+        return $? == 0;
+    }
+
+    sub requires_c99 {
+        my($self) = @_;
+        if(!$self->c99_available) {
+            $self->log_warn("This distribution requires a C99 compiler, but $Config{cc} seems not to support C99, stopped.\n");
+            exit;
+        }
+        return;
+    }
 ...
 );
 
@@ -59,4 +101,5 @@ my $build = My::Builder->new(
     create_readme  => 1,
     create_license => 1,
 );
+$build->requires_c99();
 $build->create_build_script();
