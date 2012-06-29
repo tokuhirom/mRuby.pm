@@ -13,7 +13,6 @@ my $class = Module::Build->subclass(
 
             require Devel::PPPort;
             Devel::PPPort::WriteFile('ppport.h');
-            $self->SUPER::process_PL_files();
 
             require Cwd::Guard;
 
