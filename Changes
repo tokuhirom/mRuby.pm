@@ -1,5 +1,9 @@
 Revision history for Perl extension mRuby
 
+0.04
+
+    - checking c99 feature
+
 0.03
 
     - doc enhancement
