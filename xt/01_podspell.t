@@ -60,3 +60,5 @@ mysqldiff
 mmm
 mruby
 mRuby
+Str
+irep

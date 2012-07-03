@@ -100,5 +100,6 @@ perltidy.ERR$
 ^vendor/mruby/mrblib/mrblib.d$
 ^vendor/mruby/mrblib/mrblib.rbtmp$
 ^vendor/mruby/src/.*\.d$
-^vendor/mruby/src/y.tab.c$
+# include output of yacc
+# ^vendor/mruby/src/y.tab.c$
 ^+vendor/mruby/.*\.d$
