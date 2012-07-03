@@ -126,6 +126,7 @@ vendor/mruby/src/symbol.c
 vendor/mruby/src/time.c
 vendor/mruby/src/variable.c
 vendor/mruby/src/vm.c
+vendor/mruby/src/y.tab.c
 vendor/mruby/test/assert.rb
 vendor/mruby/test/CMakeLists.txt
 vendor/mruby/test/driver.c

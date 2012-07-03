@@ -1,5 +1,10 @@
 Revision history for Perl extension mRuby
 
+0.05
+
+    - use latest mRuby
+    - include bison's output in distribution tar ball
+
 0.04
 
     - checking c99 feature
