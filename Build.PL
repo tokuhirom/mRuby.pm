@@ -77,7 +77,7 @@ my $build = My::Builder->new(
         'Test::More' => '0.98',
         'Test::Requires' => 0,
         'Cwd::Guard' => 0,
-        'Devel::PPPort' => 0,
+        'Devel::PPPort' => 3.20,
     },
     configure_requires   => { 'Module::Build' => '0.38' },
     requires             => {

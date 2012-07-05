@@ -1,5 +1,9 @@
 Revision history for Perl extension mRuby
 
+0.06
+
+    - depend to latest Devel::PPPort
+
 0.05
 
     - use latest mRuby
