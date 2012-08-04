@@ -75,7 +75,7 @@ new(const char *klass)
 void
 parse_string(mrb_state *mrb, const char *src)
     PPCODE:
-        struct mrb_parser_state* st = mrb_parse_string(mrb, src);
+        struct mrb_parser_state* st = mrb_parse_string(mrb, src, NULL);
         XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(st)))), gv_stashpv("mRuby::ParserState", TRUE)));
         XSRETURN(1);
 
