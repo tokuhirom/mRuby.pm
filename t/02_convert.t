@@ -7,9 +7,14 @@ use mRuby;
 subtest 'simple' => sub {
     my @tests = (
         q{9} => 9,
+        q{1.5} => 1.5,
+        q{true} => 1,
+        q{false} => undef,
+        q{nil} => undef,
+        q{:foo} => 'foo',
         q{"JOHN"} => 'JOHN',
         q{[1,2,3]} => [1,2,3],
-        q!{'KE' => 'NT'}! => {KE => 'NT'},
+        q!{'KE' => 'NT', :symk => :symv, 1.5 => 2.5, 3 => 4}! => {KE => 'NT', symk => 'symv', '1.5' => 2.5, 3 => 4},
     );
 
     while (my ($src, $expected) = splice @tests, 0, 2) {
