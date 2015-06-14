@@ -18,7 +18,7 @@ KHASH_DECLARE(ht, mrb_value, mrb_value, 1);
 /* KHASH_DEFINE (ht, mrb_value, mrb_value, 1, mrb_hash_ht_hash_func, mrb_hash_ht_hash_equal); */
 
 static
-SV * mrb_value2sv(mrb_value v) {
+SV * mrb_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
     switch (mrb_type(v)) {
     case MRB_TT_FALSE:
         return &PL_sv_undef;
@@ -27,32 +27,35 @@ SV * mrb_value2sv(mrb_value v) {
     case MRB_TT_STRING:
         return newSVpv((char*)RSTRING_PTR(v), (STRLEN)RSTRING_LEN(v));
     case MRB_TT_HASH: {
+        const mrb_value  keys = mrb_hash_keys(mrb, v);
+        const mrb_value *ptr  = RARRAY_PTR(keys);
+        const int        len  = RARRAY_LEN(keys);
+
         HV * ret = newHV();
-        khash_t(ht) * h = RHASH_TBL(v);
-        khiter_t k;
 
-        if (!h) { abort(); }
-        for (k = kh_begin(h); k != kh_end(h); k++) {
-            if (kh_exist(h, k)) {
-                mrb_value kk = kh_key(h,k);
-                mrb_value vv = kh_value(h,k);
+        int i;
+        for (i=0; i<len; i++) {
+            const mrb_value kk = ptr[i];
+            const mrb_value vv = mrb_hash_get(mrb, v, kk);
 
-                STRLEN key_len;
-                char *key = SvPV(mrb_value2sv(kk), key_len);
-                hv_store(ret, key, key_len, mrb_value2sv(vv), 0);
-            }
+            STRLEN key_len;
+            const char *key = SvPV(mrb_value2sv(aTHX_ mrb, kk), key_len);
+            hv_store(ret, key, key_len, mrb_value2sv(aTHX_ mrb, vv), 0);
         }
 
         return newRV_noinc((SV*)ret);
     }
     case MRB_TT_ARRAY: {
-        int len = RARRAY_LEN(v);
+        const mrb_value *ptr = RARRAY_PTR(v);
+        const int        len = RARRAY_LEN(v);
+
         AV * ret = newAV();
+
         int i;
-        mrb_value *ptr = RARRAY_PTR(v);
         for (i=0; i<len; i++) {
-            av_push(ret, mrb_value2sv(ptr[i]));
+            av_push(ret, mrb_value2sv(aTHX_ mrb, ptr[i]));
         }
+
         return newRV_noinc((SV*)ret);
     }
     default:
@@ -68,35 +71,29 @@ MODULE = mRuby      PACKAGE = mRuby::State
 void
 new(const char *klass)
     PPCODE:
-        mrb_state* mrb = mrb_open();
+        const mrb_state* mrb = mrb_open();
         XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(mrb)))), gv_stashpv(klass, TRUE)));
         XSRETURN(1);
 
 void
 parse_string(mrb_state *mrb, const char *src)
     PPCODE:
-        struct mrb_parser_state* st = mrb_parse_string(mrb, src, NULL);
+        const struct mrb_parser_state* st = mrb_parse_string(mrb, src, NULL);
         XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(st)))), gv_stashpv("mRuby::ParserState", TRUE)));
         XSRETURN(1);
 
 void
 generate_code(mrb_state *mrb, struct mrb_parser_state* st)
     PPCODE:
-        int n = mrb_generate_code(mrb, st->tree);
-        XSRETURN_IV(n);
-
-void
-proc_new(mrb_state *mrb, int n)
-    PPCODE:
-        struct RProc * proc = mrb_proc_new(mrb, mrb->irep[n]);
+        const struct RProc * proc = mrb_generate_code(mrb, st);
         XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(proc)))), gv_stashpv("mRuby::RProc", TRUE)));
         XSRETURN(1);
 
 void
 run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
     PPCODE:
-        mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
-        mXPUSHs(mrb_value2sv(ret));
+        const mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
+        mXPUSHs(mrb_value2sv(aTHX_ mrb, ret));
         XSRETURN(1);
 
 MODULE = mRuby      PACKAGE = mRuby::ParserState

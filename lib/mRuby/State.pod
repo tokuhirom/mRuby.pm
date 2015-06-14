@@ -18,13 +18,9 @@ Create new instance of mRuby::State.
 
 Parse ruby string and return new instance of L<mRuby::ParserState>.
 
-=item $state->generate_code($parser_state : mRuby::ParserState) : Int
+=item $state->generate_code($parser_state : mRuby::ParserState) : mRuby::RProc
 
 Generate code from L<mRuby::ParserState>.
-
-=item $state->proc_new($n :Int) : mRuby::RProc
-
-Get a L<mRuby::RProc> object from irep.
 
 =item my $ret = $state->run($proc : mRuby::RProc, $val : Any) : Any
 

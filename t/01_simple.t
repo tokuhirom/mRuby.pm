@@ -9,10 +9,10 @@ subtest 'simple' => sub {
     isa_ok($mrb, 'mRuby::State');
     my $st = $mrb->parse_string('9');
     isa_ok($st, 'mRuby::ParserState');
-    my $n = $mrb->generate_code($st);
-    ok($n);
+    my $proc = $mrb->generate_code($st);
+    ok($proc);
     $st->pool_close();
-    my $ret = $mrb->run($mrb->proc_new($n), undef);
+    my $ret = $mrb->run($proc, undef);
     is($ret, 9);
 };
 
@@ -21,10 +21,10 @@ subtest 'return string' => sub {
     isa_ok($mrb, 'mRuby::State');
     my $st = $mrb->parse_string('"OK" + "JOHN"');
     isa_ok($st, 'mRuby::ParserState');
-    my $n = $mrb->generate_code($st);
-    ok($n);
+    my $proc = $mrb->generate_code($st);
+    ok($proc);
     $st->pool_close();
-    my $ret = $mrb->run($mrb->proc_new($n), undef);
+    my $ret = $mrb->run($proc, undef);
     is($ret, 'OKJOHN');
 };
 
