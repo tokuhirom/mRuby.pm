@@ -1,5 +1,7 @@
 Revision history for Perl extension mRuby
 
+{{$NEXT}}
+
 0.06
 
     - depend to latest Devel::PPPort

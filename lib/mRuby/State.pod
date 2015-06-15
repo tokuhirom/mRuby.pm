@@ -10,19 +10,19 @@ This is a perl representation of mrb_state.
 
 =over 4
 
-=item my $state = mRuby::State->new() : mRuby::State
+=item C<< my $state = mRuby::State->new() : mRuby::State >>
 
 Create new instance of mRuby::State.
 
-=item $state->parse_string($src : Str) : mRuby::ParserState
+=item C<< $state->parse_string($src : Str) : mRuby::ParserState >>
 
 Parse ruby string and return new instance of L<mRuby::ParserState>.
 
-=item $state->generate_code($parser_state : mRuby::ParserState) : mRuby::RProc
+=item C<< $state->generate_code($parser_state : mRuby::ParserState) : mRuby::RProc >>
 
 Generate code from L<mRuby::ParserState>.
 
-=item my $ret = $state->run($proc : mRuby::RProc, $val : Any) : Any
+=item C<< my $ret = $state->run($proc : mRuby::RProc, $val : Any) : Any >>
 
 Run the C<< $proc >> and get a return value.
 
