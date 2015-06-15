@@ -18,42 +18,60 @@ KHASH_DECLARE(ht, mrb_value, mrb_value, 1);
 /* KHASH_DEFINE (ht, mrb_value, mrb_value, 1, mrb_hash_ht_hash_func, mrb_hash_ht_hash_equal); */
 
 static
-SV * mrb_value2sv(mrb_value v) {
+SV * mrb_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
     switch (mrb_type(v)) {
     case MRB_TT_FALSE:
+    case MRB_TT_UNDEF:
         return &PL_sv_undef;
+    case MRB_TT_TRUE:
+        return newSViv(1);
     case MRB_TT_FIXNUM:
         return newSViv(mrb_fixnum(v));
+    case MRB_TT_FLOAT:
+        return newSVnv(mrb_float(v));
     case MRB_TT_STRING:
         return newSVpv((char*)RSTRING_PTR(v), (STRLEN)RSTRING_LEN(v));
+    case MRB_TT_SYMBOL: {
+        mrb_int len;
+        const char *name = mrb_sym2name_len(mrb, mrb_symbol(v), &len);
+        return newSVpv((char*)name, (STRLEN)len);
+    }
     case MRB_TT_HASH: {
-        HV * ret = newHV();
-        khash_t(ht) * h = RHASH_TBL(v);
-        khiter_t k;
+        const mrb_value  keys = mrb_hash_keys(mrb, v);
+        const mrb_value *ptr  = RARRAY_PTR(keys);
+        const int        len  = RARRAY_LEN(keys);
 
-        if (!h) { abort(); }
-        for (k = kh_begin(h); k != kh_end(h); k++) {
-            if (kh_exist(h, k)) {
-                mrb_value kk = kh_key(h,k);
-                mrb_value vv = kh_value(h,k);
+        HV * ret = (HV*)sv_2mortal((SV*)newHV());
 
-                STRLEN key_len;
-                char *key = SvPV(mrb_value2sv(kk), key_len);
-                hv_store(ret, key, key_len, mrb_value2sv(vv), 0);
-            }
+        int i;
+        for (i=0; i<len; i++) {
+            const mrb_value kk = ptr[i];
+            const mrb_value vv = mrb_hash_get(mrb, v, kk);
+
+            SV * key_sv = sv_2mortal(mrb_value2sv(aTHX_ mrb, kk));
+            SV * val_sv = mrb_value2sv(aTHX_ mrb, vv);
+
+            STRLEN key_len;
+            const char *key = SvPV(key_sv, key_len);
+            hv_store(ret, key, key_len, SvROK(val_sv) ? SvREFCNT_inc(sv_2mortal(val_sv)) : val_sv, 0);
         }
 
-        return newRV_noinc((SV*)ret);
+        return newRV_inc((SV*)ret);
     }
     case MRB_TT_ARRAY: {
-        int len = RARRAY_LEN(v);
-        AV * ret = newAV();
+        const mrb_value *ptr = RARRAY_PTR(v);
+        const int        len = RARRAY_LEN(v);
+
+        AV * ret = (AV*)sv_2mortal((SV*)newAV());
+
+
         int i;
-        mrb_value *ptr = RARRAY_PTR(v);
         for (i=0; i<len; i++) {
-            av_push(ret, mrb_value2sv(ptr[i]));
+            SV * val_sv = mrb_value2sv(aTHX_ mrb, ptr[i]);
+            av_push(ret, SvROK(val_sv) ? SvREFCNT_inc(sv_2mortal(val_sv)) : val_sv);
         }
-        return newRV_noinc((SV*)ret);
+
+        return newRV_inc((SV*)ret);
     }
     default:
         croak("This type of ruby value is not supported yet: %d", mrb_type(v));
@@ -68,44 +86,56 @@ MODULE = mRuby      PACKAGE = mRuby::State
 void
 new(const char *klass)
     PPCODE:
-        mrb_state* mrb = mrb_open();
-        XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(mrb)))), gv_stashpv(klass, TRUE)));
+        const mrb_state* mrb = mrb_open();
+        XPUSHs(sv_bless(sv_2mortal(newRV_inc(sv_2mortal(newSViv(PTR2IV(mrb))))), gv_stashpv(klass, TRUE)));
         XSRETURN(1);
 
 void
 parse_string(mrb_state *mrb, const char *src)
     PPCODE:
-        struct mrb_parser_state* st = mrb_parse_string(mrb, src, NULL);
-        XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(st)))), gv_stashpv("mRuby::ParserState", TRUE)));
+        const struct mrb_parser_state* st = mrb_parse_string(mrb, src, NULL);
+        XPUSHs(sv_bless(sv_2mortal(newRV_inc(sv_2mortal(newSViv(PTR2IV(st))))), gv_stashpv("mRuby::ParserState", TRUE)));
         XSRETURN(1);
 
 void
 generate_code(mrb_state *mrb, struct mrb_parser_state* st)
     PPCODE:
-        int n = mrb_generate_code(mrb, st->tree);
-        XSRETURN_IV(n);
-
-void
-proc_new(mrb_state *mrb, int n)
-    PPCODE:
-        struct RProc * proc = mrb_proc_new(mrb, mrb->irep[n]);
-        XPUSHs(sv_bless(newRV_noinc(sv_2mortal(newSViv(PTR2IV(proc)))), gv_stashpv("mRuby::RProc", TRUE)));
+        const struct RProc * proc = mrb_generate_code(mrb, st);
+        XPUSHs(sv_bless(sv_2mortal(newRV_inc(sv_2mortal(newSViv(PTR2IV(proc))))), gv_stashpv("mRuby::RProc", TRUE)));
         XSRETURN(1);
 
 void
 run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
     PPCODE:
-        mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
-        mXPUSHs(mrb_value2sv(ret));
+        const mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
+
+        SV * sv = mrb_value2sv(aTHX_ mrb, ret);
+        if (SvOK(sv)) {
+          mXPUSHs(sv);
+        }
+        else {
+          XPUSHs(sv);
+        }
         XSRETURN(1);
+
+void
+DESTROY(mrb_state *mrb)
+    PPCODE:
+        mrb_close(mrb);
+        XSRETURN(0);
 
 MODULE = mRuby      PACKAGE = mRuby::ParserState
 
 void
 pool_close(struct mrb_parser_state* st)
     PPCODE:
-        mrb_pool_close(st->pool);
-        XSRETURN_UNDEF;
+        XSRETURN(0);
+
+void
+DESTROY(struct mrb_parser_state* st)
+    PPCODE:
+        mrb_parser_free(st);
+        XSRETURN(0);
 
 MODULE = mRuby      PACKAGE = mRuby::RProc
 

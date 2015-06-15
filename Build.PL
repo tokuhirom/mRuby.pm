@@ -90,7 +90,7 @@ my $build = My::Builder->new(
     name        => 'mRuby',
     module_name => 'mRuby',
 
-    extra_linker_flags => ['-L' . File::Spec->rel2abs('vendor/mruby/lib/'), '-lmruby'],
+    extra_linker_flags => ['-L' . File::Spec->rel2abs('vendor/mruby/build/host/lib/'), '-lmruby'],
     extra_compiler_flags => ['-fPIC', '-I' . File::Spec->rel2abs('vendor/mruby/include/')],
 
     # script_files => [''],
