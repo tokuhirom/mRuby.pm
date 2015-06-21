@@ -83,3 +83,88 @@ SV * mruby_pm_bridge_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
     abort();
 }
 
+static mrb_value mruby_pm_bridge_av2value(pTHX_ mrb_state *mrb, AV *av) {
+  const I32 size = av_len(av) + 1;
+  mrb_value ary = mrb_ary_new_capa(mrb, (mrb_int)size);
+
+  I32 i;
+  for (i=0; LIKELY(i<size); i++) {
+    SV** v = av_fetch(av, i, 0);
+    mrb_ary_set(mrb, ary, i, mruby_pm_bridge_sv2value(aTHX_ mrb, *v));
+  }
+
+  return ary;
+}
+
+static mrb_value mruby_pm_bridge_hv2value(pTHX_ mrb_state *mrb, HV *hv) {
+  static const int BUF_SIZE = 32;
+
+  int bufsize = BUF_SIZE;
+  int keysize = 0;
+  SV **keys_buf; Newxc(keys_buf, bufsize, SV*, SV*);
+  SV **vals_buf; Newxc(vals_buf, bufsize, SV*, SV*);
+  hv_foreach(hv, ent, {
+    keys_buf[keysize] = hv_iterkeysv(ent);
+    vals_buf[keysize] = HeVAL(ent);
+    if (++keysize == bufsize) {
+      bufsize *= 2;
+      Renewc(keys_buf, bufsize, SV*, SV*);
+      Renewc(vals_buf, bufsize, SV*, SV*);
+    }
+  });
+
+  mrb_value hash = mrb_hash_new_capa(mrb, (mrb_int)keysize);
+
+  int i;
+  for (i=0; LIKELY(i<keysize); i++) {
+    const mrb_value key = mruby_pm_bridge_sv2value(aTHX_ mrb, keys_buf[i]);
+    const mrb_value val = mruby_pm_bridge_sv2value(aTHX_ mrb, vals_buf[i]);
+    mrb_hash_set(mrb, hash, key, val);
+  }
+
+  Safefree(keys_buf);
+  Safefree(vals_buf);
+  return hash;
+}
+
+mrb_value mruby_pm_bridge_sv2value(pTHX_ mrb_state *mrb, SV *sv) {
+  if (!SvOK(sv)) {
+    return mrb_nil_value();
+  }
+  else if (sv_isobject(sv)) {
+    if (sv_derived_from(sv, "mRuby::Symbol")) {
+      STRLEN len;
+      const char* sym = SvPV(SvRV(sv), len);
+      return mrb_symbol_value(mrb_intern(mrb, sym, (size_t)len));
+    }
+    else if (sv_isobject(sv) && sv_derived_from(sv, "mRuby::Bool::True")) {
+      return mrb_true_value();
+    }
+    else if (sv_isobject(sv) && sv_derived_from(sv, "mRuby::Bool::False")) {
+      return mrb_false_value();
+    }
+    return mrb_nil_value();
+  }
+  else if (SvROK(sv)) {
+    switch (SvTYPE(SvRV(sv))) {
+      case SVt_PVAV:
+        return mruby_pm_bridge_av2value(aTHX_ mrb, (AV*)SvRV(sv));
+      case SVt_PVHV:
+        return mruby_pm_bridge_hv2value(aTHX_ mrb, (HV*)SvRV(sv));
+      default:
+        return mruby_pm_bridge_sv2value(aTHX_ mrb, (SV*)SvRV(sv));
+    }
+  }
+  else if (SvIOK(sv)) {
+    return mrb_fixnum_value((mrb_int)SvIV(sv));
+  }
+  else if (SvNOK(sv)) {
+    return mrb_float_value(mrb, (mrb_float)SvNV(sv));
+  }
+  else {
+    STRLEN len;
+    const char *p = SvPV(sv, len);
+    return mrb_str_new(mrb, p, (size_t)len);
+  }
+}
+

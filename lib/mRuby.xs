@@ -44,6 +44,32 @@ run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
         XSRETURN(1);
 
 void
+funcall(mrb_state *mrb, struct RProc* proc, SV* funcname, ...)
+    PPCODE:
+        STRLEN len;
+        const char*   funcname_p   = SvPV(funcname, len);
+        const mrb_sym funcname_sym = mrb_intern(mrb, funcname_p, (size_t)len);
+        const mrb_int argc         = (mrb_int)items - 3;
+
+        mrb_value *argv; Newxc(argv, argc, mrb_value, mrb_value);
+        for (int i = 0; LIKELY(i<argc); i++) {
+            SV *arg = ST(i+3);
+            argv[i] = mruby_pm_bridge_sv2value(aTHX_ mrb, arg);
+        }
+        mrb_toplevel_run(mrb, proc);
+        const mrb_value ret = mrb_funcall_argv(mrb, mrb_top_self(mrb), funcname_sym, argc, argv);
+        Safefree(argv);
+
+        SV * sv = mruby_pm_bridge_value2sv(aTHX_ mrb, ret);
+        if (LIKELY(SvOK(sv))) {
+          mXPUSHs(sv);
+        }
+        else {
+          XPUSHs(sv);
+        }
+        XSRETURN(1);
+
+void
 proc_new(SV *self, SV *proc)
     PPCODE:
         warn("proc_new() is OBSOLETE. This API will be removed in the near future.");

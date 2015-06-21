@@ -26,4 +26,8 @@ Generate code from L<mRuby::ParserState>.
 
 Run the C<< $proc >> and get a return value.
 
+=item C<< my $ret = $state->funcall($proc : mRuby::RProc, $funcname : Str, ...) : Any >>
+
+Call specified named function in the C<< $proc >> context and get a return value.
+
 =back

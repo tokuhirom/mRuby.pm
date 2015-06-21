@@ -8,6 +8,12 @@ use mRuby::Bool qw/mrb_true mrb_false/;
 
 sub run {
     my @tests = @_;
+    subtest run     => sub { _run(@tests)     };
+    subtest funcall => sub { _funcall(@tests) };
+}
+
+sub _run {
+    my @tests = @_;
     while (my ($src, $expected) = splice @tests, 0, 2) {
         subtest "src: $src" => sub {
             my $mrb = mRuby::State->new();
@@ -19,6 +25,53 @@ sub run {
             my $ret = $mrb->run($proc, undef);
             is_deeply($ret, $expected, 'run') or diag explain $ret;
         };
+    }
+}
+
+sub _funcall {
+    my @tests = @_;
+    subtest identity   => sub { _funcall_identity(@tests)   };
+    subtest conformity => sub { _funcall_conformity(@tests) };
+}
+
+sub _funcall_identity {
+    my @tests = @_;
+
+    my $mrb = mRuby::State->new();
+    isa_ok($mrb, 'mRuby::State');
+    my $st = $mrb->parse_string(<<'...');
+def identity(v)
+  return v
+end
+...
+    isa_ok($st, 'mRuby::ParserState');
+    my $proc = $mrb->generate_code($st);
+    isa_ok($proc, 'mRuby::RProc');
+
+    while (my ($src, $expected) = splice @tests, 0, 2) {
+        my $ret = $mrb->funcall($proc, 'identity', $expected);
+        is_deeply($ret, $expected, "src: $src") or diag explain $ret;
+    }
+}
+
+sub _funcall_conformity {
+    my @tests = @_;
+
+    while (my ($src, $expected) = splice @tests, 0, 2) {
+        next if $src =~ /:[a-z]+\s*=>/; ## XXX: perl hash key cannot be blessed value.
+
+        my $mrb = mRuby::State->new();
+        isa_ok($mrb, 'mRuby::State');
+        my $st = $mrb->parse_string(<<"...");
+def conformity(v)
+  return v == $src
+end
+...
+        isa_ok($st, 'mRuby::ParserState');
+        my $proc = $mrb->generate_code($st);
+        isa_ok($proc, 'mRuby::RProc');
+        my $ret = $mrb->funcall($proc, 'conformity', $expected);
+        ok($ret, "src: $src") or diag explain $expected;
     }
 }
 

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 8;
+use Test::More tests => 11;
 use Test::Requires qw/Test::LeakTrace/;
 use mRuby;
 
@@ -48,4 +48,37 @@ no_leaks_ok {
     my $proc = $mrb->generate_code($st);
     my $v = $mrb->run($proc, undef);
 } '#run returns nil in hashref';
+
+no_leaks_ok {
+    my $mrb = mRuby::State->new();
+    my $st = $mrb->parse_string(<<'...');
+def identity(v)
+  return v
+end
+...
+    my $proc = $mrb->generate_code($st);
+    $mrb->funcall($proc, 'identity', 9);
+} '#funcall';
+
+no_leaks_ok {
+    my $mrb = mRuby::State->new();
+    my $st = $mrb->parse_string(<<'...');
+def identity(v)
+  return v
+end
+...
+    my $proc = $mrb->generate_code($st);
+    $mrb->funcall($proc, 'identity', [1, [2, [3]]]);
+} '#funcall with arrayref';
+
+no_leaks_ok {
+    my $mrb = mRuby::State->new();
+    my $st = $mrb->parse_string(<<'...');
+def identity(v)
+  return v
+end
+...
+    my $proc = $mrb->generate_code($st);
+    $mrb->funcall($proc, 'identity', {1 => { 2 => [3] }});
+} '#funcall with hashref';
 
