@@ -57,7 +57,8 @@ def identity(v)
 end
 ...
     my $proc = $mrb->generate_code($st);
-    $mrb->funcall($proc, 'identity', 9);
+    $mrb->run($proc, undef);
+    $mrb->funcall(identity => 9);
 } '#funcall';
 
 no_leaks_ok {
@@ -68,7 +69,8 @@ def identity(v)
 end
 ...
     my $proc = $mrb->generate_code($st);
-    $mrb->funcall($proc, 'identity', [1, [2, [3]]]);
+    $mrb->run($proc, undef);
+    $mrb->funcall(identity => [1, [2, [3]]]);
 } '#funcall with arrayref';
 
 no_leaks_ok {
@@ -79,6 +81,7 @@ def identity(v)
 end
 ...
     my $proc = $mrb->generate_code($st);
-    $mrb->funcall($proc, 'identity', {1 => { 2 => [3] }});
+    $mrb->run($proc, undef);
+    $mrb->funcall(identity => {1 => { 2 => [3] }});
 } '#funcall with hashref';
 

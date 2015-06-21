@@ -47,9 +47,10 @@ end
     isa_ok($st, 'mRuby::ParserState');
     my $proc = $mrb->generate_code($st);
     isa_ok($proc, 'mRuby::RProc');
+    $mrb->run($proc, undef);
 
     while (my ($src, $expected) = splice @tests, 0, 2) {
-        my $ret = $mrb->funcall($proc, 'identity', $expected);
+        my $ret = $mrb->funcall('identity', $expected);
         is_deeply($ret, $expected, "src: $src") or diag explain $ret;
     }
 }
@@ -70,7 +71,8 @@ end
         isa_ok($st, 'mRuby::ParserState');
         my $proc = $mrb->generate_code($st);
         isa_ok($proc, 'mRuby::RProc');
-        my $ret = $mrb->funcall($proc, 'conformity', $expected);
+        $mrb->run($proc, undef);
+        my $ret = $mrb->funcall('conformity', $expected);
         ok($ret, "src: $src") or diag explain $expected;
     }
 }

@@ -31,23 +31,14 @@ mRuby::Symbol - TODO
 
     mrb_sym('foo'); ## :foo in mruby context.
 
-=head1 DESCRIPTION
+=head1 FUNCTIONS
 
-TODO
+=over
 
-=head1 SEE ALSO
+=item C<< my $sym = mrb_sym($str) : mRuby::Symbol >>
 
-L<perl>
+Generate symbol value named C<$str> in mruby.
 
-=head1 LICENSE
-
-Copyright (C) karupanerura.
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-karupanerura E<lt>karupa@cpan.orgE<gt>
+=back
 
 =cut

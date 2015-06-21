@@ -7,6 +7,8 @@ our @EXPORT_OK = qw/mrb_true mrb_false mrb_bool/;
 
 use overload
     bool     => sub { ${+shift} },
+    q{""}    => sub { ${+shift} || "" },
+    q{0+}    => sub { ${+shift} || 0 },
     fallback => 1;
 
 sub _new_bool {
@@ -50,69 +52,32 @@ __END__
 
 =head1 NAME
 
-mRuby::Symbol - TODO
+mRuby::Bool - mruby boolean value.
 
 =head1 SYNOPSIS
 
-    use mRuby::Symbol qw/mrb_sym/;
+    use mRuby::Bool qw/mrb_true mrb_false mrb_bool/;
 
-    mrb_sym('foo'); ## :foo in mruby context.
+    mrb_true;    ## true in mruby context.
+    mrb_false;   ## false in mruby context.
+    mrb_bool(1); ## true in mruby context.
 
-=head1 DESCRIPTION
+=head1 FUNCTIONS
 
-TODO
+=over
 
-=head1 SEE ALSO
+=item C<< my $bool = mrb_true() : mRuby::Bool::True >>
 
-L<perl>
+Generate C<true> boolean value in mruby.
 
-=head1 LICENSE
+=item C<< my $bool = mrb_false() : mRuby::Bool::False >>
 
-Copyright (C) karupanerura.
+Generate C<false> boolean value in mruby.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+=item C<< my $bool = mrb_bool($bool) : mRuby::Bool::True|mRuby::Bool::False >>
 
-=head1 AUTHOR
+Generate C<true> or C<false> boolean value in mruby from C<$bool>.
 
-karupanerura E<lt>karupa@cpan.orgE<gt>
-
-=cut
-
-
-
-1;
-__END__
-
-=pod
-
-=encoding utf-8
-
-=head1 NAME
-
-mRuby::Bool - TODO
-
-=head1 SYNOPSIS
-
-    use mRuby::Bool;
-
-=head1 DESCRIPTION
-
-TODO
-
-=head1 SEE ALSO
-
-L<perl>
-
-=head1 LICENSE
-
-Copyright (C) karupanerura.
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-karupanerura E<lt>karupa@cpan.orgE<gt>
+=back
 
 =cut
