@@ -50,10 +50,7 @@ SV * mrb_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
 
             SV * key_sv = sv_2mortal(mrb_value2sv(aTHX_ mrb, kk));
             SV * val_sv = mrb_value2sv(aTHX_ mrb, vv);
-
-            STRLEN key_len;
-            const char *key = SvPV(key_sv, key_len);
-            hv_store(ret, key, key_len, SvROK(val_sv) ? SvREFCNT_inc(sv_2mortal(val_sv)) : val_sv, 0);
+            hv_store_ent(ret, key_sv, SvROK(val_sv) ? SvREFCNT_inc(sv_2mortal(val_sv)) : val_sv, 0);
         }
 
         return newRV_inc((SV*)ret);
