@@ -101,7 +101,7 @@ generate_code(mrb_state *mrb, struct mrb_parser_state* st)
 void
 run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
     PPCODE:
-        const mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
+        const mrb_value ret = mrb_toplevel_run(mrb, proc);
 
         SV * sv = mrb_value2sv(aTHX_ mrb, ret);
         if (LIKELY(SvOK(sv))) {
