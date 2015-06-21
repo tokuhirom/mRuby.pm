@@ -6,9 +6,5 @@ mRuby::ParserState - parser state object
 
 =over 4
 
-=item $parser_state->pool_close()
-
-Call a  mrb_pool_close() in C level.
-
 =back
 

@@ -12,14 +12,12 @@ no_leaks_ok {
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('9');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
-} '#generate_code+pool_close';
+} '#generate_code';
 
 no_leaks_ok {
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('9');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
     $mrb->run($proc, undef);
 } '#run';
 
@@ -27,7 +25,6 @@ no_leaks_ok {
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('[1, [2, [3]]]');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
     my $v = $mrb->run($proc, undef);
 } '#run returns arrayref';
 
@@ -35,7 +32,6 @@ no_leaks_ok {
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('{1 => { 2 => [3] }}');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
     my $v = $mrb->run($proc, undef);
 } '#run returns hashref';
 
@@ -43,7 +39,6 @@ no_leaks_ok {
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('[nil]');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
     my $v = $mrb->run($proc, undef);
 } '#run returns nil in arrayref';
 
@@ -51,7 +46,6 @@ no_leaks_ok {
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('{:undef => nil}');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
     my $v = $mrb->run($proc, undef);
 } '#run returns nil in hashref';
 

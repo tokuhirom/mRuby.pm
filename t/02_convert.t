@@ -14,7 +14,6 @@ sub run {
             isa_ok($st, 'mRuby::ParserState');
             my $proc = $mrb->generate_code($st);
             isa_ok($proc, 'mRuby::RProc');
-            $st->pool_close();
             my $ret = $mrb->run($proc, undef);
             is_deeply($ret, $expected, 'run') or diag explain $ret;
         };

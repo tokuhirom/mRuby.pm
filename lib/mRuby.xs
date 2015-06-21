@@ -113,6 +113,13 @@ run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
         XSRETURN(1);
 
 void
+proc_new(SV *self, SV *proc)
+    PPCODE:
+        warn("proc_new() is OBSOLETE. This API will be removed in the near future.");
+        XPUSHs(proc);
+        XSRETURN(1);
+
+void
 DESTROY(mrb_state *mrb)
     PPCODE:
         mrb_close(mrb);
@@ -123,6 +130,7 @@ MODULE = mRuby      PACKAGE = mRuby::ParserState
 void
 pool_close(struct mrb_parser_state* st)
     PPCODE:
+        warn("pool_close() is OBSOLETE. This API will be removed in the near future.");
         XSRETURN(0);
 
 void

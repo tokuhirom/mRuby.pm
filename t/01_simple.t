@@ -11,7 +11,6 @@ subtest 'simple' => sub {
     isa_ok($st, 'mRuby::ParserState');
     my $proc = $mrb->generate_code($st);
     isa_ok($proc, 'mRuby::RProc');
-    $st->pool_close();
     my $ret = $mrb->run($proc, undef);
     is($ret, 9);
 };
@@ -23,7 +22,6 @@ subtest 'return string' => sub {
     isa_ok($st, 'mRuby::ParserState');
     my $proc = $mrb->generate_code($st);
     isa_ok($proc, 'mRuby::RProc');
-    $st->pool_close();
     my $ret = $mrb->run($proc, undef);
     is($ret, 'OKJOHN');
 };
