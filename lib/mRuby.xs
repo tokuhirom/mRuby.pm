@@ -72,3 +72,5 @@ DESTROY(struct mrb_parser_state* st)
 
 MODULE = mRuby      PACKAGE = mRuby::RProc
 
+MODULE = mRuby      PACKAGE = mRuby::Exception
+

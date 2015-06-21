@@ -73,6 +73,10 @@ SV * mruby_pm_bridge_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
 
       return newRV_inc((SV*)ret);
     }
+    case MRB_TT_EXCEPTION: {
+      mrb_value bt = mrb_exc_backtrace(mrb, v);
+      return sv_bless(SvREFCNT_inc(sv_2mortal(mruby_pm_bridge_value2sv(aTHX_ mrb, bt))), gv_stashpv("mRuby::Exception", TRUE));
+    }
     default:
       croak("This type of ruby value is not supported yet: %d", mrb_type(v));
     }
