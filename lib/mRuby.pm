@@ -20,7 +20,7 @@ sub new {
         return $class->_new_with_src($args{src});
     }
     elsif (exists $args{file}) {
-        return $class->_new_with_src(@args{qw/file encoding/});
+        return $class->_new_with_file(@args{qw/file encoding/});
     }
     else {
         Carp::croak('Invalid arguments.');
