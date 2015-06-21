@@ -35,11 +35,11 @@ sub mrb_bool ($) { ## no critic
 
 package # hide from PAUSE
     mRuby::Bool::True;
-our @INC = qw/mRuby::Bool/;
+our @ISA = qw/mRuby::Bool/;
 
 package # hide from PAUSE
     mRuby::Bool::False;
-our @INC = qw/mRuby::Bool/;
+our @ISA = qw/mRuby::Bool/;
 
 1;
 __END__
