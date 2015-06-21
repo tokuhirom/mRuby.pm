@@ -2,6 +2,14 @@ Revision history for Perl extension mRuby
 
 {{$NEXT}}
 
+0.07 2015-06-21T02:00:13Z
+
+    - include mruby 1.1.0 and adjusted to new mruby API
+      - `mRuby::State#new_proc` and `mRuby::ParserState#pool_close` are obsolute.
+    - support mruby type `symbol`, `float`, `bool`m and `nil`.
+    - support threaded-perl.
+    - fixed memory leaks.
+
 0.06
 
     - depend to latest Devel::PPPort
