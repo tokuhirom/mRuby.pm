@@ -2,6 +2,11 @@ Revision history for Perl extension mRuby
 
 {{$NEXT}}
 
+   - Fixed pod.
+   - Added funcall API.
+   - Added support to convert bool from/to perl object.
+   - Added support to convert symbol from/to perl object.
+
 0.07 2015-06-21T02:00:13Z
 
     - include mruby 1.1.0 and adjusted to new mruby API
