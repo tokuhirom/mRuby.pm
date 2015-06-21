@@ -16,11 +16,11 @@ SV * mruby_pm_bridge_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
     case MRB_TT_FLOAT:
       return newSVnv(mrb_float(v));
     case MRB_TT_STRING:
-      return newSVpv((char*)RSTRING_PTR(v), (STRLEN)RSTRING_LEN(v));
+      return newSVpvn((char*)RSTRING_PTR(v), (STRLEN)RSTRING_LEN(v));
     case MRB_TT_SYMBOL: {
       mrb_int len;
       const char *name = mrb_sym2name_len(mrb, mrb_symbol(v), &len);
-      return newSVpv((char*)name, (STRLEN)len);
+      return newSVpvn((char*)name, (STRLEN)len);
     }
     case MRB_TT_HASH: {
       const mrb_value  keys = mrb_hash_keys(mrb, v);
