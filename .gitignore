@@ -1,6 +1,7 @@
 Makefile
 inc/
 .c
+*.o
 ppport.h
 *.sw[po]
 *.bak
