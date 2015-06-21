@@ -3,6 +3,7 @@
 #include "XSUB.h"
 
 #include "ppport.h"
+#include "xshelper.h"
 
 #include "mruby.h"
 #include "mruby/array.h"
@@ -13,9 +14,6 @@
 #include "mruby/proc.h"
 #include "mruby/string.h"
 #include "mruby/variable.h"
-
-KHASH_DECLARE(ht, mrb_value, mrb_value, 1);
-/* KHASH_DEFINE (ht, mrb_value, mrb_value, 1, mrb_hash_ht_hash_func, mrb_hash_ht_hash_equal); */
 
 static
 SV * mrb_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
@@ -41,10 +39,10 @@ SV * mrb_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
         const mrb_value *ptr  = RARRAY_PTR(keys);
         const int        len  = RARRAY_LEN(keys);
 
-        HV * ret = (HV*)sv_2mortal((SV*)newHV());
+        HV * ret = newHV_mortal();
 
         int i;
-        for (i=0; i<len; i++) {
+        for (i=0; LIKELY(i<len); i++) {
             const mrb_value kk = ptr[i];
             const mrb_value vv = mrb_hash_get(mrb, v, kk);
 
@@ -59,11 +57,10 @@ SV * mrb_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
         const mrb_value *ptr = RARRAY_PTR(v);
         const int        len = RARRAY_LEN(v);
 
-        AV * ret = (AV*)sv_2mortal((SV*)newAV());
-
+        AV * ret = newAV_mortal();
 
         int i;
-        for (i=0; i<len; i++) {
+        for (i=0; LIKELY(i<len); i++) {
             SV * val_sv = mrb_value2sv(aTHX_ mrb, ptr[i]);
             av_push(ret, SvROK(val_sv) ? SvREFCNT_inc(sv_2mortal(val_sv)) : val_sv);
         }
@@ -84,21 +81,21 @@ void
 new(const char *klass)
     PPCODE:
         const mrb_state* mrb = mrb_open();
-        XPUSHs(sv_bless(sv_2mortal(newRV_inc(sv_2mortal(newSViv(PTR2IV(mrb))))), gv_stashpv(klass, TRUE)));
+        XPUSHs(sv_bless(newRV_noinc_mortal(newSViv(PTR2IV(mrb))), gv_stashpv(klass, TRUE)));
         XSRETURN(1);
 
 void
 parse_string(mrb_state *mrb, const char *src)
     PPCODE:
         const struct mrb_parser_state* st = mrb_parse_string(mrb, src, NULL);
-        XPUSHs(sv_bless(sv_2mortal(newRV_inc(sv_2mortal(newSViv(PTR2IV(st))))), gv_stashpv("mRuby::ParserState", TRUE)));
+        XPUSHs(sv_bless(newRV_noinc_mortal(newSViv(PTR2IV(st))), gv_stashpv("mRuby::ParserState", TRUE)));
         XSRETURN(1);
 
 void
 generate_code(mrb_state *mrb, struct mrb_parser_state* st)
     PPCODE:
         const struct RProc * proc = mrb_generate_code(mrb, st);
-        XPUSHs(sv_bless(sv_2mortal(newRV_inc(sv_2mortal(newSViv(PTR2IV(proc))))), gv_stashpv("mRuby::RProc", TRUE)));
+        XPUSHs(sv_bless(newRV_noinc_mortal(newSViv(PTR2IV(proc))), gv_stashpv("mRuby::RProc", TRUE)));
         XSRETURN(1);
 
 void
@@ -107,7 +104,7 @@ run(mrb_state *mrb, struct RProc* proc, SV *val=&PL_sv_undef)
         const mrb_value ret = mrb_run(mrb, proc, mrb_nil_value());
 
         SV * sv = mrb_value2sv(aTHX_ mrb, ret);
-        if (SvOK(sv)) {
+        if (LIKELY(SvOK(sv))) {
           mXPUSHs(sv);
         }
         else {
