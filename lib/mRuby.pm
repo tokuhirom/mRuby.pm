@@ -26,7 +26,6 @@ mRuby - mruby binding for perl5.
     my $mrb = mRuby::State->new();
     my $st = $mrb->parse_string('9');
     my $proc = $mrb->generate_code($st);
-    $st->pool_close();
     my $ret = $mrb->run($proc, undef);
 
 =head1 DESCRIPTION
