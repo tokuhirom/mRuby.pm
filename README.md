@@ -7,18 +7,40 @@ mRuby - mruby binding for perl5.
 
     use mRuby;
 
-    my $mrb = mRuby::State->new();
-    my $st = $mrb->parse_string('9');
-    my $proc = $mrb->generate_code($st);
-    my $ret = $mrb->run($proc, undef);
+    my $mruby = mRuby->new(src => '9');
+    my $ret = $mruby->run();
 
 # DESCRIPTION
 
 mRuby is mruby binding for perl5.
 
+# METHODS
+
+- `my $mruby = mRuby->new(src => $src : Str) : mRuby`
+
+    Parse `src` and generate `mRuby` object.
+
+- `my $mruby = mRuby->new(file => $file : Str) : mRuby`
+
+    Parse source from `file` and generate `mRuby` object.
+
+- `my $ret = $mruby->run() : Any`
+
+    Run mruby code and get a return value.
+
+- `my $ret = $mruby->funcall($funcname : Str, ...) : Any`
+
+    Call specified named mruby function from `toplevel` context and get a return value.
+
 # AUTHOR
 
 Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>
+
+karupanerura <karupa@cpan.org>
+
+# LOW LEVEL API
+
+See [mRuby::State](https://metacpan.org/pod/mRuby::State)
 
 # SEE ALSO
 
