@@ -5,6 +5,7 @@ use 5.008008;
 our $VERSION = '0.07';
 
 use mRuby::Symbol;
+use mRuby::Bool;
 
 use XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);

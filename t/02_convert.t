@@ -4,6 +4,7 @@ use utf8;
 use Test::More;
 use mRuby;
 use mRuby::Symbol qw/mrb_sym/;
+use mRuby::Bool qw/mrb_true mrb_false/;
 
 sub run {
     my @tests = @_;
@@ -25,8 +26,8 @@ subtest 'simple' => sub {
     run(
         q{9} => 9,
         q{1.5} => 1.5,
-        q{true} => 1,
-        q{false} => undef,
+        q{true} => mrb_true(),
+        q{false} => mrb_false(),
         q{nil} => undef,
         q{:foo} => mrb_sym('foo'),
         q{"JOHN"} => 'JOHN',

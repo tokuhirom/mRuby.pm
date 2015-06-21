@@ -3,14 +3,32 @@
 #include "mruby/array.h"
 #include "mruby/hash.h"
 #include "mruby/string.h"
+#include "mruby/error.h"
+
+#define hv_foreach(hv, entry, block) {  \
+  HV* hash = hv;                        \
+  hv_iterinit(hash);                    \
+  HE* entry;                            \
+  while ((entry = hv_iternext(hash))) { \
+    block;                              \
+  }                                     \
+}
+
 
 SV * mruby_pm_bridge_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
     switch (mrb_type(v)) {
-    case MRB_TT_FALSE:
     case MRB_TT_UNDEF:
       return &PL_sv_undef;
+    case MRB_TT_FALSE: {
+      if (mrb_fixnum(v)) {
+        return sv_bless(newRV_inc(sv_2mortal(newSVsv(&PL_sv_undef))), gv_stashpv("mRuby::Bool::False", TRUE));
+      }
+      else {
+        return &PL_sv_undef;
+      }
+    }
     case MRB_TT_TRUE:
-      return newSViv(1);
+      return sv_bless(newRV_inc(sv_2mortal(newSViv(1))), gv_stashpv("mRuby::Bool::True", TRUE));
     case MRB_TT_FIXNUM:
       return newSViv(mrb_fixnum(v));
     case MRB_TT_FLOAT:
