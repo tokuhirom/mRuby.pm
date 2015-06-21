@@ -1,25 +1,9 @@
-package mRuby;
-use strict;
-use warnings;
-use 5.008008;
-our $VERSION = '0.06';
-
-use XSLoader;
-
-XSLoader::load(__PACKAGE__, $VERSION);
-
-1;
-__END__
-
-=encoding utf8
-
-=for stopwords mruby
-
-=head1 NAME
+[![Build Status](https://travis-ci.org/tokuhirom/mRuby.pm.svg?branch=master)](https://travis-ci.org/tokuhirom/mRuby.pm)
+# NAME
 
 mRuby - mruby binding for perl5.
 
-=head1 SYNOPSIS
+# SYNOPSIS
 
     use mRuby;
 
@@ -29,23 +13,21 @@ mRuby - mruby binding for perl5.
     $st->pool_close();
     my $ret = $mrb->run($proc, undef);
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 mRuby is mruby binding for perl5.
 
-=head1 AUTHOR
+# AUTHOR
 
-Tokuhiro Matsuno E<lt>tokuhirom AAJKLFJEF@ GMAIL COME<gt>
+Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>
 
-=head1 SEE ALSO
+# SEE ALSO
 
-L<mRuby>
+[mRuby](https://metacpan.org/pod/mRuby)
 
-=head1 LICENSE
+# LICENSE
 
 Copyright (C) Tokuhiro Matsuno
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=cut
