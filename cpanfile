@@ -1,6 +1,7 @@
 requires 'parent';
 requires 'perl', '5.008008';
 requires 'Exporter', '5.57';
+requires 'Encode';
 
 on build => sub {
     requires 'Cwd::Guard';
