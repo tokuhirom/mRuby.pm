@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 6;
+use Test::More tests => 8;
 use Test::Requires qw/Test::LeakTrace/;
 use mRuby;
 
@@ -29,7 +29,6 @@ no_leaks_ok {
     my $proc = $mrb->generate_code($st);
     $st->pool_close();
     my $v = $mrb->run($proc, undef);
-    note explain $v;
 } '#run returns arrayref';
 
 no_leaks_ok {
@@ -38,6 +37,21 @@ no_leaks_ok {
     my $proc = $mrb->generate_code($st);
     $st->pool_close();
     my $v = $mrb->run($proc, undef);
-    note explain $v;
 } '#run returns hashref';
+
+no_leaks_ok {
+    my $mrb = mRuby::State->new();
+    my $st = $mrb->parse_string('[nil]');
+    my $proc = $mrb->generate_code($st);
+    $st->pool_close();
+    my $v = $mrb->run($proc, undef);
+} '#run returns nil in arrayref';
+
+no_leaks_ok {
+    my $mrb = mRuby::State->new();
+    my $st = $mrb->parse_string('{:undef => nil}');
+    my $proc = $mrb->generate_code($st);
+    $st->pool_close();
+    my $v = $mrb->run($proc, undef);
+} '#run returns nil in hashref';
 
