@@ -20,7 +20,7 @@ SV * mruby_pm_bridge_value2sv(pTHX_ mrb_state *mrb, const mrb_value v) {
     case MRB_TT_SYMBOL: {
       mrb_int len;
       const char *name = mrb_sym2name_len(mrb, mrb_symbol(v), &len);
-      return newSVpvn((char*)name, (STRLEN)len);
+      return sv_bless(newRV_inc(sv_2mortal(newSVpvn((char*)name, (STRLEN)len))), gv_stashpv("mRuby::Symbol", TRUE));
     }
     case MRB_TT_HASH: {
       const mrb_value  keys = mrb_hash_keys(mrb, v);

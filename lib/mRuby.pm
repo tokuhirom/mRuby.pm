@@ -4,8 +4,9 @@ use warnings;
 use 5.008008;
 our $VERSION = '0.07';
 
-use XSLoader;
+use mRuby::Symbol;
 
+use XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
 
 1;

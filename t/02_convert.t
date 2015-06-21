@@ -3,6 +3,7 @@ use warnings;
 use utf8;
 use Test::More;
 use mRuby;
+use mRuby::Symbol qw/mrb_sym/;
 
 sub run {
     my @tests = @_;
@@ -27,7 +28,7 @@ subtest 'simple' => sub {
         q{true} => 1,
         q{false} => undef,
         q{nil} => undef,
-        q{:foo} => 'foo',
+        q{:foo} => mrb_sym('foo'),
         q{"JOHN"} => 'JOHN',
         q{[]} => [],
         q{{}} => {},
@@ -38,13 +39,12 @@ subtest 'simple' => sub {
 
 subtest 'nested' => sub {
     run(
-        q{[1,[2,[3,"4",:sym,nil]]]}                          => [1,[2,[3,"4","sym",undef]]],
-        q!{'k'=>'v',:symk=>:symv,1.5=>2.5,3=>4,:undef=>nil}! => {k=>'v',symk=>'symv','1.5'=>2.5,3=>4,undef=>undef},
+        q{[1,[2,[3,"4",:sym,nil]]]}                          => [1,[2,[3,"4",mrb_sym("sym"),undef]]],
+        q!{'k'=>'v',:symk=>:symv,1.5=>2.5,3=>4,:undef=>nil}! => {k=>'v',symk=>mrb_sym('symv'),'1.5'=>2.5,3=>4,undef=>undef},
         q{{:k=>[:v,nil],:undef=>nil}}                        => {k=>['v',undef],undef=>undef},
         q{[{:k=>[:v,nil],:undef=>nil}]}                      => [{k=>['v',undef],undef=>undef}],
     );
 };
-
 
 done_testing;
 
