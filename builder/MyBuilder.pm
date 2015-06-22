@@ -20,7 +20,7 @@ sub new {
         exit 0;
     }
 
-    $args{extra_compiler_flags} = ['-fPIC', '-I' . File::Spec->rel2abs('vendor/mruby/include')];
+    $args{extra_compiler_flags} = ['-std=c99', '-fPIC', '-I' . File::Spec->rel2abs('vendor/mruby/include')];
     $args{extra_linker_flags}   = ['-L' . File::Spec->rel2abs('vendor/mruby/build/host/lib'), '-lmruby'];
 
     return $self->SUPER::new(%args);
