@@ -2,6 +2,10 @@ Revision history for Perl extension mRuby
 
 {{$NEXT}}
 
+0.10 2015-06-22T23:44:46Z
+
+   - Fixed compile option. (shohex)
+
 0.09 2015-06-22T06:50:12Z
 
    - Added -std=gnu99 option. (syohex)
