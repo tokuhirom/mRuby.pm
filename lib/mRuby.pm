@@ -2,7 +2,7 @@ package mRuby;
 use strict;
 use warnings;
 use 5.008008;
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use Carp ();
 use Encode ();

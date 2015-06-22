@@ -74,10 +74,11 @@
          "web" : "https://github.com/tokuhirom/mRuby.pm"
       }
    },
-   "version" : "0.08",
+   "version" : "0.09",
    "x_contributors" : [
       "tokuhirom <tokuhirom@gmail.com>",
       "karupanerura <karupanerura@users.noreply.github.com>",
+      "Syohei YOSHIDA <syohex@gmail.com>",
       "karupanerura <karupa@cpan.org>"
    ]
 }
