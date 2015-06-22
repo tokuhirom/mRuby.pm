@@ -23,7 +23,7 @@ __END__
 
 =head1 NAME
 
-mRuby::Symbol - TODO
+mRuby::Symbol - mruby symbol value.
 
 =head1 SYNOPSIS
 
