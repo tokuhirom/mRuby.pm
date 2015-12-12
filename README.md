@@ -34,9 +34,9 @@ mRuby is mruby binding for perl5.
 
 # AUTHOR
 
-Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>
+Tokuhiro Matsuno &lt;tokuhirom AAJKLFJEF@ GMAIL COM>
 
-karupanerura <karupa@cpan.org>
+karupanerura &lt;karupa@cpan.org>
 
 # LOW LEVEL API
 

@@ -4,7 +4,7 @@
       "Tokuhiro Matsuno <tokuhirom AAJKLFJEF@ GMAIL COM>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.4.1, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.0.0, CPAN::Meta::Converter version 2.150005",
    "license" : [
       "perl_5"
    ],
@@ -35,6 +35,7 @@
       },
       "configure" : {
          "requires" : {
+            "Module::Build" : "0.4005",
             "Module::Build::XSUtil" : "0.03"
          }
       },
@@ -77,8 +78,9 @@
    "version" : "0.10",
    "x_contributors" : [
       "karupanerura <karupanerura@users.noreply.github.com>",
-      "karupanerura <karupa@cpan.org>",
       "Syohei YOSHIDA <syohex@gmail.com>",
-      "Tokuhiro Matsuno <tokuhirom@gmail.com>"
-   ]
+      "Tokuhiro Matsuno <tokuhirom@gmail.com>",
+      "karupanerura <karupa@cpan.org>"
+   ],
+   "x_serialization_backend" : "JSON::PP version 2.27300"
 }
