@@ -2,6 +2,10 @@ Revision history for Perl extension mRuby
 
 {{$NEXT}}
 
+0.11 2015-12-12T15:48:49Z
+
+   - Upgrade mruby 1.1.0 to 1.2.0
+
 0.10 2015-06-22T23:44:46Z
 
    - Fixed compile option. (shohex)
