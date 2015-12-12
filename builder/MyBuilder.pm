@@ -29,7 +29,7 @@ sub new {
 sub ACTION_code {
     my $self = shift;
 
-    my @libs = <vendor/mruby/lib/*>;
+    my @libs = <vendor/mruby/build/*>;
     if (@libs <= 0) {
         my $guard = Cwd::Guard::cwd_guard('vendor/mruby/');
         system(q{make CFLAGS="-std=gnu99 -g -fPIC"}) == 0
