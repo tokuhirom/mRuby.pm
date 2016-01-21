@@ -2,6 +2,10 @@ Revision history for Perl extension mRuby
 
 {{$NEXT}}
 
+0.12 2016-01-21T10:25:39Z
+
+   - Fixed dependency. (thank you plicease)
+
 0.11 2015-12-12T15:48:49Z
 
    - Upgrade mruby 1.1.0 to 1.2.0
