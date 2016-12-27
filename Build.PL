@@ -19,6 +19,7 @@ my %args = (
 
     configure_requires => {
         'Module::Build' => '0.4005',
+        'Cwd::Guard'    => 0,
     },
 
     name            => 'mRuby',
